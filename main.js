@@ -91,10 +91,13 @@ btnAuthGoogle.addEventListener('click', async () => {
 });
 
 // Skip Login (Demo Mode)
-btnAuthSkip.addEventListener('click', () => {
+btnAuthSkip.addEventListener('click', async () => {
   authView.classList.add('hidden');
   mainApp.classList.remove('hidden');
   mainApp.classList.add('flex');
+  window.currentUserUid = 'demo_user'; // Provide a placeholder UID for demo mode
+  await seedDemoUsers();
+  if (window.initAppAfterLogin) window.initAppAfterLogin();
 });
 
 const SEED_USERS = [
@@ -122,25 +125,6 @@ async function seedDemoUsers() {
   }
 }
 
-// Listen to Auth State
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    authView.classList.add('hidden');
-    mainApp.classList.remove('hidden');
-    mainApp.classList.add('flex');
-    window.currentUserUid = user.uid;
-    
-    // Seed demo users before loading profiles
-    await seedDemoUsers();
-    if (window.initAppAfterLogin) window.initAppAfterLogin();
-  } else {
-    mainApp.classList.remove('flex');
-    mainApp.classList.add('hidden');
-    authView.classList.remove('hidden');
-    window.currentUserUid = null;
-  }
-});
-
 // Global logout function
 window.logoutFirebase = () => {
   signOut(auth);
@@ -153,6 +137,7 @@ let currentMode = 'project';
 let currentIndex = 0;
 
 window.initAppAfterLogin = async () => {
+  console.log("initAppAfterLogin called. Current User:", window.currentUserUid);
   console.log("Fetching users from Firestore...");
   try {
     const querySnapshot = await getDocs(collection(db, "users"));
@@ -187,8 +172,29 @@ window.initAppAfterLogin = async () => {
     renderCard(currentIndex);
   } catch (err) {
     console.error("Error fetching users:", err);
+    alert("Error fetching profiles: " + err.message);
   }
 };
+
+// Listen to Auth State - Moved to bottom to ensure dependencies are loaded
+onAuthStateChanged(auth, async (user) => {
+  console.log("Auth State Changed. User:", user ? user.uid : "None");
+  if (user) {
+    authView.classList.add('hidden');
+    mainApp.classList.remove('hidden');
+    mainApp.classList.add('flex');
+    window.currentUserUid = user.uid;
+    
+    // Seed demo users before loading profiles
+    await seedDemoUsers();
+    if (window.initAppAfterLogin) window.initAppAfterLogin();
+  } else {
+    mainApp.classList.remove('flex');
+    mainApp.classList.add('hidden');
+    authView.classList.remove('hidden');
+    window.currentUserUid = null;
+  }
+});
 
 // ── Match & like tracking ────────────────────
 const likedProfiles = new Set();   // names you swiped right on
@@ -642,20 +648,33 @@ function getAutoReply(text) {
 }
 
 async function handleDemoAutoReply(userMessage) {
-  if (!DEMO_PROFILES.includes(activeChatName)) return;
+  const currentMatchId = activeMatchId;
+  const currentChatName = activeChatName;
   
-  const p = getProfileByName(activeChatName);
+  console.log("Checking for auto-reply. Active Chat:", currentChatName);
+  if (!DEMO_PROFILES.includes(currentChatName)) {
+    console.log("Not a demo profile, skipping auto-reply.");
+    return;
+  }
+  
+  const p = getProfileByName(currentChatName);
+  console.log("Found profile for auto-reply:", p ? p.name : "None");
   if (!p) return;
 
   // Simulate typing delay
   setTimeout(async () => {
-    const reply = getAutoReply(userMessage);
-    const chatRef = collection(db, "messages", activeMatchId, "chat");
-    await addDoc(chatRef, {
-      senderId: p.uid, 
-      text: reply,
-      timestamp: serverTimestamp()
-    });
+    try {
+      const reply = getAutoReply(userMessage);
+      const chatRef = collection(db, "messages", currentMatchId, "chat");
+      await addDoc(chatRef, {
+        senderId: p.uid, 
+        text: reply,
+        timestamp: serverTimestamp()
+      });
+      console.log("Auto-reply sent successfully");
+    } catch (err) {
+      console.error("Error sending auto-reply:", err);
+    }
   }, 2000);
 }
 
