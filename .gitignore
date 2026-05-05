@@ -1,0 +1,12 @@
+# Firebase keys
+firebase/keys.js
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Dependencies (if any)
+node_modules/
+dist/
+build/
+.env

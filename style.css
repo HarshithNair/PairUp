@@ -1,0 +1,251 @@
+    /* ── Base ────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0b0d17;
+      color: #e2e8f0;
+      margin: 0;
+      overflow: hidden;
+      height: 100dvh;
+    }
+
+    /* ── Glassmorphism card ──────────────────── */
+    .glass {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(24px) saturate(1.4);
+      -webkit-backdrop-filter: blur(24px) saturate(1.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* ── Swipe animations ───────────────────── */
+    .card-enter {
+      animation: cardIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .card-exit-left {
+      animation: swipeLeft 0.45s cubic-bezier(0.55, 0, 1, 0.45) forwards;
+    }
+    .card-exit-right {
+      animation: swipeRight 0.45s cubic-bezier(0.55, 0, 1, 0.45) forwards;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: scale(0.92) translateY(30px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes swipeLeft {
+      to { opacity: 0; transform: translateX(-120%) rotate(-14deg); }
+    }
+    @keyframes swipeRight {
+      to { opacity: 0; transform: translateX(120%) rotate(14deg); }
+    }
+
+    /* ── Match flash overlay ────────────────── */
+    .match-flash {
+      animation: flashIn 0.6s ease forwards;
+    }
+    @keyframes flashIn {
+      0%   { opacity: 0; transform: scale(0.7); }
+      50%  { opacity: 1; transform: scale(1.1); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* ── Skill tag hover glow ───────────────── */
+    .skill-tag {
+      transition: box-shadow 0.25s, transform 0.25s;
+    }
+    .skill-tag:hover {
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.45);
+      transform: translateY(-1px);
+    }
+
+    /* ── Action button press ────────────────── */
+    .action-btn {
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .action-btn:active {
+      transform: scale(0.92);
+    }
+
+    /* ── Bottom nav indicator ───────────────── */
+    .nav-item { position: relative; transition: color 0.2s; }
+    .nav-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 3px;
+      border-radius: 9999px;
+      background: linear-gradient(90deg, #a855f7, #6366f1);
+    }
+
+    /* ── Background decorative orbs ─────────── */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(100px);
+      pointer-events: none;
+      opacity: 0.25;
+    }
+
+    /* ── Compatibility badge pulse ───────────── */
+    .badge-pulse {
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.35); }
+      50%      { box-shadow: 0 0 0 10px rgba(168, 85, 247, 0); }
+    }
+
+    /* ── Scrollbar hide for mobile feel ──────── */
+    ::-webkit-scrollbar { display: none; }
+
+    /* ── Empty state ─────────────────────────── */
+    .empty-state { animation: fadeUp 0.6s ease forwards; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Profile Detail Modal ───────────────── */
+    .modal-backdrop {
+      transition: opacity 0.3s ease;
+    }
+    .modal-backdrop.entering { opacity: 0; }
+    .modal-backdrop.visible { opacity: 1; }
+
+    .modal-sheet {
+      transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
+    }
+    .modal-sheet.entering {
+      transform: translateY(40px) scale(0.96);
+      opacity: 0;
+    }
+    .modal-sheet.visible {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+
+    /* ── Progress bar fill ──────────────────── */
+    .progress-fill {
+      transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+      width: 0%;
+    }
+    .progress-fill.animate {
+      /* width set inline via JS */
+    }
+
+    /* ── Info grid icon glow ────────────────── */
+    .info-icon {
+      transition: box-shadow 0.3s, transform 0.3s;
+    }
+    .info-icon:hover {
+      box-shadow: 0 0 16px rgba(168, 85, 247, 0.35);
+      transform: scale(1.08);
+    }
+
+    /* ── Modal scrollbar (subtle) ───────────── */
+    .modal-scroll::-webkit-scrollbar { display: block; width: 4px; }
+    .modal-scroll::-webkit-scrollbar-track { background: transparent; }
+    .modal-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 9999px; }
+
+    /* ── Chat styles ────────────────────────── */
+    .view-section { display: none; }
+    .view-section.active-view { display: flex; }
+
+    .chat-list-item {
+      transition: background 0.2s, transform 0.15s;
+    }
+    .chat-list-item:hover {
+      background: rgba(255,255,255,0.06);
+    }
+    .chat-list-item:active { transform: scale(0.98); }
+
+    .msg-bubble {
+      animation: msgIn 0.3s cubic-bezier(0.22,1,0.36,1) forwards;
+      max-width: 80%;
+    }
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(8px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .slide-in-right {
+      animation: slideRight 0.3s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+    @keyframes slideRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to   { transform: translateX(0); opacity: 1; }
+    }
+    .slide-out-right {
+      animation: slideOutRight 0.25s ease forwards;
+    }
+    @keyframes slideOutRight {
+      to { transform: translateX(100%); opacity: 0; }
+    }
+
+    .quick-pitch-btn {
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+    .quick-pitch-btn:hover {
+      background: rgba(168,85,247,0.15);
+      box-shadow: 0 0 12px rgba(168,85,247,0.2);
+    }
+    .quick-pitch-btn:active { transform: scale(0.95); }
+
+    .typing-dot {
+      animation: typingBounce 1.4s infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typingBounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-4px); }
+    }
+
+    .online-dot {
+      box-shadow: 0 0 0 2px #0b0d17;
+    }
+
+    /* ── Mode toggle ────────────────────────── */
+    .mode-toggle {
+      position: relative;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 9999px;
+      padding: 3px;
+      display: flex;
+    }
+    .mode-toggle-slider {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      height: calc(100% - 6px);
+      width: calc(50% - 3px);
+      border-radius: 9999px;
+      background: linear-gradient(135deg, #a855f7, #6366f1);
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      box-shadow: 0 2px 12px rgba(168,85,247,0.35);
+      z-index: 0;
+    }
+    .mode-toggle-slider.right {
+      transform: translateX(100%);
+    }
+    .mode-toggle button {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.45);
+      cursor: pointer;
+      transition: color 0.3s;
+      white-space: nowrap;
+    }
+    .mode-toggle button.active-mode {
+      color: #fff;
+    }
